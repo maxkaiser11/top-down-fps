@@ -20,6 +20,7 @@ function love.load()
 end
 
 function love.update(dt)
+	-- Player Movement
 	if love.keyboard.isDown("d") then
 		player.x = player.x + player.speed * dt
 	end
@@ -36,7 +37,11 @@ function love.update(dt)
 		player.y = player.y + player.speed * dt
 	end
 
-	TempRotation = TempRotation + 0.01
+	-- Zombie Movement
+	for i, z in ipairs(zombies) do
+		z.x = z.x + (math.cos(ZombiePlayerAngle(z)) * z.speed * dt)
+		z.y = z.y + (math.sin(ZombiePlayerAngle(z)) * z.speed * dt)
+	end
 end
 
 function love.draw()
@@ -84,7 +89,7 @@ function SpawnZombie()
 	local zombie = {
 		x = math.random(0, love.graphics.getWidth()),
 		y = math.random(0, love.graphics.getHeight()),
-		speed = 100,
+		speed = 140,
 	}
 	table.insert(zombies, zombie)
 end

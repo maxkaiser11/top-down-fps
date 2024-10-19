@@ -146,12 +146,6 @@ function love.draw()
 	end
 end
 
-function love.keypressed(key)
-	if key == "space" then
-		SpawnZombie()
-	end
-end
-
 function love.mousepressed(x, y, button)
 	if button == 1 then
 		SpawnBullet()

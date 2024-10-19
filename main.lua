@@ -1,6 +1,9 @@
 local love = require("love")
 
 function love.load()
+	-- makes random spawn more unique
+	math.randomseed(os.time())
+
 	_G.sprites = {
 		background = love.graphics.newImage("sprites/background.png"),
 		bullet = love.graphics.newImage("sprites/bullet.png"),
@@ -14,31 +17,36 @@ function love.load()
 		speed = 180,
 	}
 
+	_G.myFont = love.graphics.newFont(30)
+
 	_G.zombies = {}
 
 	_G.bullets = {}
 
-	_G.gameState = 2
+	_G.gameState = 1
+	_G.score = 0
 	_G.maxTime = 2
 	_G.timer = maxTime
 end
 
 function love.update(dt)
 	-- Player Movement
-	if love.keyboard.isDown("d") then
-		player.x = player.x + player.speed * dt
-	end
+	if gameState == 2 then
+		if love.keyboard.isDown("d") and player.x < love.graphics.getWidth() then
+			player.x = player.x + player.speed * dt
+		end
 
-	if love.keyboard.isDown("a") then
-		player.x = player.x - player.speed * dt
-	end
+		if love.keyboard.isDown("a") and player.x > 0 then
+			player.x = player.x - player.speed * dt
+		end
 
-	if love.keyboard.isDown("w") then
-		player.y = player.y - player.speed * dt
-	end
+		if love.keyboard.isDown("w") and player.y > 0 then
+			player.y = player.y - player.speed * dt
+		end
 
-	if love.keyboard.isDown("s") then
-		player.y = player.y + player.speed * dt
+		if love.keyboard.isDown("s") and player.y < love.graphics.getHeight() then
+			player.y = player.y + player.speed * dt
+		end
 	end
 
 	-- Zombie Movement
@@ -51,6 +59,8 @@ function love.update(dt)
 			for i, z in ipairs(zombies) do
 				zombies[i] = nil
 				gameState = 1
+				player.x = love.graphics.getWidth() / 2
+				player.y = love.graphics.getHeight() / 2
 			end
 		end
 	end
@@ -75,6 +85,7 @@ function love.update(dt)
 			if DistanceBetween(z.x, z.y, b.x, b.y) < 20 then
 				z.dead = true
 				b.dead = true
+				score = score + 1
 			end
 		end
 	end
@@ -107,6 +118,16 @@ end
 
 function love.draw()
 	love.graphics.draw(sprites.background, 0, 0)
+
+	-- Draws Begin play
+	if gameState == 1 then
+		love.graphics.setFont(myFont)
+		love.graphics.printf("Click Anywhere to Begin!", 0, 50, love.graphics.getWidth(), "center")
+	end
+
+	-- Prints Score at bottom of screen
+	love.graphics.printf("Score: " .. score, 0, love.graphics.getHeight() - 100, love.graphics.getWidth(), "center")
+
 	-- Drawing Player
 	love.graphics.draw(
 		sprites.player,
@@ -147,8 +168,13 @@ function love.draw()
 end
 
 function love.mousepressed(x, y, button)
-	if button == 1 then
+	if button == 1 and gameState == 2 then
 		SpawnBullet()
+	elseif button == 1 and gameState == 1 then
+		gameState = 2
+		maxTime = 2
+		timer = maxTime
+		score = 0
 	end
 end
 

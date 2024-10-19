@@ -14,11 +14,13 @@ function love.load()
 		speed = 180,
 	}
 
-	zombies = {}
+	_G.zombies = {}
 
-	bullets = {}
+	_G.bullets = {}
 
-	TempRotation = 0
+	_G.gameState = 2
+	_G.maxTime = 2
+	_G.timer = maxTime
 end
 
 function love.update(dt)
@@ -48,6 +50,7 @@ function love.update(dt)
 		if DistanceBetween(z.x, z.y, player.x, player.y) < 30 then
 			for i, z in ipairs(zombies) do
 				zombies[i] = nil
+				gameState = 1
 			end
 		end
 	end
@@ -89,6 +92,15 @@ function love.update(dt)
 		local b = bullets[i]
 		if b.dead == true then
 			table.remove(bullets, i)
+		end
+	end
+
+	if gameState == 2 then
+		timer = timer - dt
+		if timer <= 0 then
+			SpawnZombie()
+			maxTime = 0.95 * maxTime
+			timer = maxTime
 		end
 	end
 end
@@ -159,11 +171,27 @@ end
 
 function SpawnZombie()
 	local zombie = {
-		x = math.random(0, love.graphics.getWidth()),
-		y = math.random(0, love.graphics.getHeight()),
+		x = 0,
+		y = 0,
 		speed = 140,
 		dead = false,
 	}
+
+	local side = math.random(1, 4)
+	if side == 1 then
+		zombie.x = -30
+		zombie.y = math.random(0, love.graphics.getHeight())
+	elseif side == 2 then
+		zombie.x = love.graphics.getWidth() + 30
+		zombie.y = math.random(0, love.graphics.getHeight())
+	elseif side == 3 then
+		zombie.x = math.random(0, love.graphics.getWidth())
+		zombie.y = -30
+	elseif side == 4 then
+		zombie.x = math.random(0, love.graphics.getWidth())
+		zombie.y = love.graphics.getHeight() + 30
+	end
+
 	table.insert(zombies, zombie)
 end
 

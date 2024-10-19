@@ -46,7 +46,7 @@ function love.draw()
 		sprites.player,
 		player.x,
 		player.y,
-		playerMouseAngle(),
+		PlayerMouseAngle(),
 		nil,
 		nil,
 		sprites.player:getWidth() / 2,
@@ -54,21 +54,33 @@ function love.draw()
 	)
 
 	for i, z in ipairs(zombies) do
-		love.graphics.draw(sprites.zombie, z.x, z.y)
+		love.graphics.draw(
+			sprites.zombie,
+			z.x,
+			z.y,
+			ZombiePlayerAngle(z),
+			nil,
+			nil,
+			sprites.zombie:getWidth() / 2,
+			sprites.zombie:getHeight() / 2
+		)
 	end
 end
 
 function love.keypressed(key)
 	if key == "space" then
-		spawnZombie()
+		SpawnZombie()
 	end
 end
 
-function playerMouseAngle()
+function PlayerMouseAngle()
 	return math.atan2(player.y - love.mouse.getY(), player.x - love.mouse.getX()) + math.pi
 end
+function ZombiePlayerAngle(enemy)
+	return math.atan2(player.y - enemy.y, player.x - enemy.x)
+end
 
-function spawnZombie()
+function SpawnZombie()
 	local zombie = {
 		x = math.random(0, love.graphics.getWidth()),
 		y = math.random(0, love.graphics.getHeight()),

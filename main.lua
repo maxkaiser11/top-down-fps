@@ -11,6 +11,8 @@ function love.load()
 	player.x = love.graphics.getWidth() / 2
 	player.y = love.graphics.getHeight() / 2
 	player.speed = 180
+
+	TempRotation = 0
 end
 
 function love.update(dt)
@@ -29,9 +31,21 @@ function love.update(dt)
 	if love.keyboard.isDown("s") then
 		player.y = player.y + player.speed * dt
 	end
+
+	TempRotation = TempRotation + 0.01
 end
 
 function love.draw()
 	love.graphics.draw(sprites.background, 0, 0)
-	love.graphics.draw(sprites.player, player.x, player.y)
+	-- Drawing Player
+	love.graphics.draw(
+		sprites.player,
+		player.x,
+		player.y,
+		TempRotation,
+		nil,
+		nil,
+		sprites.player:getWidth() / 2,
+		sprites.player:getHeight() / 2
+	)
 end

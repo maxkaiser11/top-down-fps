@@ -1,16 +1,20 @@
 local love = require("love")
 
 function love.load()
-	_G.sprites = {}
-	sprites.background = love.graphics.newImage("sprites/background.png")
-	sprites.bullet = love.graphics.newImage("sprites/bullet.png")
-	sprites.player = love.graphics.newImage("sprites/player.png")
-	sprites.zombie = love.graphics.newImage("sprites/zombie.png")
+	_G.sprites = {
+		background = love.graphics.newImage("sprites/background.png"),
+		bullet = love.graphics.newImage("sprites/bullet.png"),
+		player = love.graphics.newImage("sprites/player.png"),
+		zombie = love.graphics.newImage("sprites/zombie.png"),
+	}
 
-	_G.player = {}
-	player.x = love.graphics.getWidth() / 2
-	player.y = love.graphics.getHeight() / 2
-	player.speed = 180
+	_G.player = {
+		x = love.graphics.getWidth() / 2,
+		y = love.graphics.getHeight() / 2,
+		speed = 180,
+	}
+
+	zombies = {}
 
 	TempRotation = 0
 end
@@ -48,8 +52,27 @@ function love.draw()
 		sprites.player:getWidth() / 2,
 		sprites.player:getHeight() / 2
 	)
+
+	for i, z in ipairs(zombies) do
+		love.graphics.draw(sprites.zombie, z.x, z.y)
+	end
+end
+
+function love.keypressed(key)
+	if key == "space" then
+		spawnZombie()
+	end
 end
 
 function playerMouseAngle()
 	return math.atan2(player.y - love.mouse.getY(), player.x - love.mouse.getX()) + math.pi
+end
+
+function spawnZombie()
+	local zombie = {
+		x = math.random(0, love.graphics.getWidth()),
+		y = math.random(0, love.graphics.getHeight()),
+		speed = 100,
+	}
+	table.insert(zombies, zombie)
 end

@@ -16,6 +16,8 @@ function love.load()
 
 	zombies = {}
 
+	bullets = {}
+
 	TempRotation = 0
 end
 
@@ -41,6 +43,18 @@ function love.update(dt)
 	for i, z in ipairs(zombies) do
 		z.x = z.x + (math.cos(ZombiePlayerAngle(z)) * z.speed * dt)
 		z.y = z.y + (math.sin(ZombiePlayerAngle(z)) * z.speed * dt)
+
+		-- Checks Collision
+		if DistanceBetween(z.x, z.y, player.x, player.y) < 30 then
+			for i, z in ipairs(zombies) do
+				zombies[i] = nil
+			end
+		end
+	end
+
+	for i, b in ipairs(bullets) do
+		b.x = b.x + (math.cos(b.direction) * b.speed * dt)
+		b.y = b.y + (math.sin(b.direction) * b.speed * dt)
 	end
 end
 
@@ -70,11 +84,30 @@ function love.draw()
 			sprites.zombie:getHeight() / 2
 		)
 	end
+
+	for i, b in ipairs(bullets) do
+		love.graphics.draw(
+			sprites.bullet,
+			b.x,
+			b.y,
+			nil,
+			0.4,
+			nil,
+			sprites.bullet:getWidth() / 2,
+			sprites.bullet:getHeight() / 2
+		)
+	end
 end
 
 function love.keypressed(key)
 	if key == "space" then
 		SpawnZombie()
+	end
+end
+
+function love.mousepressed(x, y, button)
+	if button == 1 then
+		SpawnBullet()
 	end
 end
 
@@ -85,6 +118,10 @@ function ZombiePlayerAngle(enemy)
 	return math.atan2(player.y - enemy.y, player.x - enemy.x)
 end
 
+function DistanceBetween(x1, y1, x2, y2)
+	return math.sqrt((x2 - x1) ^ 2 + (y2 - y1) ^ 2)
+end
+
 function SpawnZombie()
 	local zombie = {
 		x = math.random(0, love.graphics.getWidth()),
@@ -92,4 +129,14 @@ function SpawnZombie()
 		speed = 140,
 	}
 	table.insert(zombies, zombie)
+end
+
+function SpawnBullet()
+	local bullet = {
+		x = player.x,
+		y = player.y,
+		speed = 500,
+		direction = PlayerMouseAngle(),
+	}
+	table.insert(bullets, bullet)
 end
